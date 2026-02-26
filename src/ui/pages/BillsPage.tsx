@@ -4,7 +4,7 @@ import { CompetenciaPicker } from '../components/CompetenciaPicker'
 import { EmptyState } from '../components/EmptyState'
 import { MoneyInput } from '../components/MoneyInput'
 import { getSavedCompetencia, saveCompetencia } from '@/services/competenciaStore'
-import { listBills, ensureBillsForCompetencia, createBill, updateBillMeta, removeBill, setBillStatus } from '@/services/billsService'
+import { listBills, ensureBillsForCompetencia, createBill, updateBillMeta, removeBill, setBillStatus, getCompetenciaStatus } from '@/services/billsService'
 import { billsForCompetencia } from '@/services/dashboardService'
 import { formatBRL } from '@/services/money'
 import { dueDateForCompetencia, daysUntilDue } from '@/services/date'
@@ -34,12 +34,17 @@ export default function BillsPage() {
   const [statusFilter, setStatusFilter] = React.useState<'TODOS'|'PAGO'|'PENDENTE'>('TODOS')
   const [catFilter, setCatFilter] = React.useState<string>('')
 
+  const [mesStatus, setMesStatus] = React.useState<'CONCLUIDO'|'EM_ANDAMENTO'>('EM_ANDAMENTO')
+
   const [form, setForm] = React.useState<FormState>(emptyForm)
   const [errors, setErrors] = React.useState<Record<string,string>>({})
 
   async function refresh(){
     await ensureBillsForCompetencia(competencia)
     setAll(await listBills())
+
+    const st = await getCompetenciaStatus(competencia)
+    setMesStatus(st)
   }
 
   React.useEffect(()=>{
@@ -121,7 +126,25 @@ const totals = bills.reduce((acc, b) => {
           <div className="h1">Contas</div>
           <div className="muted">CRUD + status por competência</div>
         </div>
-        <CompetenciaPicker value={competencia} onChange={setCompetencia} />
+        <div className="row" style={{gap:10, alignItems:'center'}}>
+          <CompetenciaPicker value={competencia} onChange={setCompetencia} />
+          <span
+            className="badge"
+            style={{
+              background: mesStatus === 'CONCLUIDO' ? 'rgba(34,197,94,.15)' : 'rgba(245,158,11,.15)',
+              borderColor: mesStatus === 'CONCLUIDO' ? 'rgba(34,197,94,.35)' : 'rgba(245,158,11,.35)',
+              color: mesStatus === 'CONCLUIDO' ? '#22c55e' : '#f59e0b',
+              whiteSpace: 'nowrap',
+            }}
+            title={
+              mesStatus === 'CONCLUIDO'
+                ? 'Todas as contas deste mês estão pagas.'
+                : 'Existe conta pendente neste mês.'
+            }
+          >
+            {mesStatus === 'CONCLUIDO' ? 'Mês concluído' : 'Mês em andamento'}
+          </span>
+        </div>
       </div>
 
       <div style={{height:10}} />
@@ -212,21 +235,31 @@ const totals = bills.reduce((acc, b) => {
         <div className="list">
           {filtered.map(b=>{
             const st = b.statusPorMes?.[competencia]?.status
-            const due = dueDateForCompetencia(competencia, b.vencimentoDia)
-            const dias = daysUntilDue(competencia, b.vencimentoDia, new Date())
+            const snap = b.snapshotPorMes?.[competencia]
+            const display = snap ?? b
+
+            const due = dueDateForCompetencia(competencia, display.vencimentoDia)
+            const dias = daysUntilDue(competencia, display.vencimentoDia, new Date())
             const warn = st === 'PENDENTE' && dias <= 2
             return (
               <div key={b.id} className="card" style={warn ? {borderColor:'rgba(245,158,11,.6)'} : undefined}>
                 <div className="item">
                   <div className="item-main" style={{ flex: 1, minWidth: 0 }}>
-                    <div className="item-title" style={{ whiteSpace: "normal", wordBreak: "break-word", lineHeight: 1.3 }}>{b.nome}</div>
+                    <div className="item-title" style={{ whiteSpace: "normal", wordBreak: "break-word", lineHeight: 1.3 }}>
+                      {display.nome}
+                      {snap && (
+                        <span className="badge" style={{ marginLeft: 8, fontSize: 11 }} title="Histórico congelado (mês concluído)">
+                          histórico
+                        </span>
+                      )}
+                    </div>
                     <div className="item-sub">
-                      {b.categoria} • vence em {due} • {b.recorrente ? 'recorrente' : 'não recorrente'}
+                      {display.categoria} • vence em {due} • {b.recorrente ? 'recorrente' : 'não recorrente'}
                       {warn && <span> • <b style={{color:'var(--warn)'}}>vencendo em {Math.max(dias,0)} dia(s)</b></span>}
                     </div>
                   </div>
                   <div style={{display:'flex', flexDirection:'column', gap:8, alignItems:'flex-end'}}>
-                    <span className={"pill " + (st === 'PAGO' ? 'ok' : 'warn')}>{formatBRL(b.valor)}</span>
+                    <span className={"pill " + (st === 'PAGO' ? 'ok' : 'warn')}>{formatBRL(display.valor)}</span>
                     <div style={{display:'flex', gap:8, flexWrap:'wrap', justifyContent:'flex-end'}}>
                       <button className="btn small ok" onClick={async ()=>{ await setBillStatus(b.id, competencia, 'PAGO'); refresh() }}>PAGO</button>
                       <button className="btn small" onClick={async ()=>{ await setBillStatus(b.id, competencia, 'PENDENTE'); refresh() }}>PENDENTE</button>

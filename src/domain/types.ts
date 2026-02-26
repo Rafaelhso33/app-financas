@@ -3,6 +3,13 @@ export type Competencia = string // YYYY-MM
 
 export type BillStatus = 'PAGO' | 'PENDENTE'
 
+export type BillSnapshot = {
+  nome: string
+  categoria: string
+  valor: number
+  vencimentoDia: number
+}
+
 export type BillStatusEntry = {
   status: BillStatus
   pagoEm?: ISODate
@@ -19,6 +26,12 @@ export type Bill = {
   criadoEm: string
   atualizadoEm: string
   statusPorMes: Record<Competencia, BillStatusEntry>
+
+  /**
+   * Congela os dados do mês quando ele for concluído (para que edições futuras
+   * não alterem o histórico).
+   */
+  snapshotPorMes?: Record<Competencia, BillSnapshot>
 }
 
 export type CreditPurchase = {

@@ -43,3 +43,12 @@ export function daysUntilDue(c: Competencia, vencimentoDia: number, today = new 
   const diff = due.getTime() - t.getTime()
   return Math.ceil(diff / (1000 * 60 * 60 * 24))
 }
+
+/**
+ * Formata a competência (YYYY-MM) para exibição em PT-BR: MM/AAAA.
+ */
+export function formatCompetenciaBR(c: Competencia): string {
+  const [y, m] = String(c).split('-')
+  if (!y || !m) return String(c)
+  return `${m}/${y}`
+}

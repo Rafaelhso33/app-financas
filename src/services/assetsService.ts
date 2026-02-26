@@ -56,7 +56,8 @@ export async function ensureAssetsForCompetencia(competencia: Competencia): Prom
       const updated: Asset = {
         ...a,
         atualizadoEm: nowIso(),
-        valorPorMes: { ...a.valorPorMes, [competencia]: a.valor }
+        // Ao virar o mês, o valor inicia em 0 para o usuário lançar o que entrou naquele mês.
+        valorPorMes: { ...a.valorPorMes, [competencia]: 0 }
       }
       await assetsRepo.upsert(updated)
     }
@@ -67,7 +68,8 @@ export function assetsForCompetencia(all: Asset[], competencia: Competencia): Ar
   return all
     .map(a => {
       const has = a.valorPorMes?.[competencia] !== undefined
-      if (a.recorrente) return { asset: a, valor: a.valorPorMes?.[competencia] ?? a.valor }
+      // Recorrente: sempre exibe no mês. Se ainda não existir valor do mês, começa em 0.
+      if (a.recorrente) return { asset: a, valor: a.valorPorMes?.[competencia] ?? 0 }
       if (!has) return null
       return { asset: a, valor: a.valorPorMes[competencia] }
     })

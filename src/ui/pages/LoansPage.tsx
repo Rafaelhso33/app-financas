@@ -26,6 +26,14 @@ export default function LoansPage() {
   async function refresh(){ setAll(await listLoans()) }
   React.useEffect(()=>{ refresh() }, [])
 
+  const dashboard = React.useMemo(() => {
+    const totals = all.map(loanTotals)
+    const totalEmprestimos = all.reduce((acc, l) => acc + (l.valorEmprestimo ?? 0), 0)
+    const totalPago = totals.reduce((acc, t) => acc + (t.valorPago ?? 0), 0)
+    const totalFalta = totals.reduce((acc, t) => acc + (t.saldoDevedor ?? 0), 0)
+    return { totalEmprestimos, totalPago, totalFalta }
+  }, [all])
+
   function validate(f: LoanForm){
     const e: Record<string,string> = {}
     if (!f.descricao.trim()) e.descricao = 'Descrição é obrigatória'
@@ -89,6 +97,23 @@ export default function LoansPage() {
       </div>
 
       <div style={{height:12}} />
+
+      {all.length > 0 && (
+        <div className="grid3" style={{marginBottom:12}}>
+          <div className="card">
+            <div className="muted">Total emprestado</div>
+            <div className="h1">{formatBRL(dashboard.totalEmprestimos)}</div>
+          </div>
+          <div className="card">
+            <div className="muted">Já pagou</div>
+            <div className="h1" style={{color:'var(--ok)'}}>{formatBRL(dashboard.totalPago)}</div>
+          </div>
+          <div className="card">
+            <div className="muted">Ainda falta</div>
+            <div className="h1" style={{color:'var(--warn)'}}>{formatBRL(dashboard.totalFalta)}</div>
+          </div>
+        </div>
+      )}
 
       {all.length === 0 ? (
         <EmptyState title="Sem empréstimos" description="Crie um empréstimo para controlar pagamentos e saldo." />
