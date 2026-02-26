@@ -218,8 +218,8 @@ const totals = bills.reduce((acc, b) => {
             return (
               <div key={b.id} className="card" style={warn ? {borderColor:'rgba(245,158,11,.6)'} : undefined}>
                 <div className="item">
-                  <div className="item-main">
-                    <div className="item-title">{b.nome}</div>
+                  <div className="item-main" style={{ flex: 1, minWidth: 0 }}>
+                    <div className="item-title" style={{ whiteSpace: "normal", wordBreak: "break-word", lineHeight: 1.3 }}>{b.nome}</div>
                     <div className="item-sub">
                       {b.categoria} • vence em {due} • {b.recorrente ? 'recorrente' : 'não recorrente'}
                       {warn && <span> • <b style={{color:'var(--warn)'}}>vencendo em {Math.max(dias,0)} dia(s)</b></span>}
