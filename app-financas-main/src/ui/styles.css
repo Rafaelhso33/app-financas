@@ -93,6 +93,38 @@ label{font-size:12px; color:var(--muted); display:block; margin:10px 0 6px;}
 .nav a.active{color:var(--text);}
 
 .nav a span:first-child{font-size:22px; line-height:1;}
+
+@media(min-width: 768px) {
+  body { padding-bottom: 0; padding-left: 90px; }
+  .container { max-width: 1100px; }
+  .nav {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: 80px;
+    border-top: none;
+    border-right: 1px solid var(--border);
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-x: visible;
+    padding: 20px 6px;
+    gap: 10px;
+  }
+  .nav a {
+    min-width: 0;
+    width: 100%;
+    padding: 8px 4px;
+    font-size: 10px;
+    border-radius: 10px;
+  }
+  .nav a span:first-child {
+    font-size: 18px;
+  }
+  .nav a span:last-child {
+    font-size: 10px;
+  }
+}
 hr{border:none; border-top:1px solid var(--border); margin:10px 0;}
 .toast{
   position:fixed; left:12px; right:12px; top:12px;
