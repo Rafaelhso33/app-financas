@@ -102,35 +102,43 @@ label{font-size:12px; color:var(--muted); display:block; margin:10px 0 6px;}
 .nav a span:first-child{font-size:30px; line-height:1;}
 
 @media(min-width: 768px) {
-  body { padding-bottom: 0; padding-left: 72px; }
+  body { padding-bottom: 0; padding-left: 220px; }
   .container { max-width: 1100px; }
   .nav {
     top: 0;
     bottom: 0;
     left: 0;
     right: auto;
-    width: 64px;
+    width: 220px;
     border-top: none;
     border-right: 1px solid var(--border);
     flex-direction: column;
     justify-content: flex-start;
     overflow-x: visible;
-    padding: 12px 4px;
-    gap: 6px;
+    padding: 20px 12px;
+    gap: 8px;
   }
   .nav a {
     min-width: auto;
     width: 100%;
-    padding: 8px 2px;
-    font-size: 10px;
-    border-radius: 10px;
+    flex-direction: row;
+    align-items: center;
+    padding: 12px 14px;
+    font-size: 14px;
+    border-radius: 12px;
+    gap: 12px;
   }
   .nav a span:first-child {
-    font-size: 18px;
+    font-size: 20px;
   }
   .nav a span:last-child {
-    font-size: 9px;
-    text-align: center;
+    font-size: 14px;
+    text-align: left;
+    font-weight: 600;
+  }
+  .nav a.active {
+    background: rgba(59,130,246,.15);
+    color: var(--brand);
   }
 }
 hr{border:none; border-top:1px solid var(--border); margin:10px 0;}

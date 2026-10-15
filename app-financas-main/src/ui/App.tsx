@@ -11,6 +11,27 @@ import LoginPage from './pages/LoginPage'
 export default function App() {
   return (
     <>
+      <nav className="nav" aria-label="Navegação">
+        <NavLink to="/" end className={({isActive})=>isActive?'active':''}>
+          <span>🏠</span><span>Dashboard</span>
+        </NavLink>
+        <NavLink to="/contas" className={({isActive})=>isActive?'active':''}>
+          <span>🧾</span><span>Contas</span>
+        </NavLink>
+        <NavLink to="/cartao" className={({isActive})=>isActive?'active':''}>
+          <span>💳</span><span>Cartão</span>
+        </NavLink>
+        <NavLink to="/emprestimos" className={({isActive})=>isActive?'active':''}>
+          <span>🏦</span><span>Empréstimos</span>
+        </NavLink>
+        <NavLink to="/ativos" className={({isActive})=>isActive?'active':''}>
+          <span>💰</span><span>Ativos</span>
+        </NavLink>
+        <NavLink to="/config" className={({isActive})=>isActive?'active':''}>
+          <span>⚙️</span><span>Config</span>
+        </NavLink>
+      </nav>
+
       <div className="container">
         <div className="header">
           <div className="brand">
@@ -39,27 +60,6 @@ export default function App() {
           <Route path="/config" element={<SettingsPage />} />
         </Routes>
       </div>
-
-      <nav className="nav" aria-label="Navegação">
-        <NavLink to="/" end className={({isActive})=>isActive?'active':''}>
-          <span>🏠</span><span>Dashboard</span>
-        </NavLink>
-        <NavLink to="/contas" className={({isActive})=>isActive?'active':''}>
-          <span>🧾</span><span>Contas</span>
-        </NavLink>
-        <NavLink to="/cartao" className={({isActive})=>isActive?'active':''}>
-          <span>💳</span><span>Cartão</span>
-        </NavLink>
-        <NavLink to="/emprestimos" className={({isActive})=>isActive?'active':''}>
-          <span>🏦</span><span>Empréstimos</span>
-        </NavLink>
-        <NavLink to="/ativos" className={({isActive})=>isActive?'active':''}>
-          <span>💰</span><span>Ativos</span>
-        </NavLink>
-        <NavLink to="/config" className={({isActive})=>isActive?'active':''}>
-          <span>⚙️</span><span>Config</span>
-        </NavLink>
-      </nav>
     </>
   )
 }
