@@ -7,6 +7,7 @@ import LoansPage from './pages/LoansPage'
 import AssetsPage from './pages/AssetsPage'
 import SettingsPage from './pages/SettingsPage'
 import LoginPage from './pages/LoginPage'
+import TrainingPage from './pages/TrainingPage'
 
 export default function App() {
   return (
@@ -29,6 +30,9 @@ export default function App() {
         </NavLink>
         <NavLink to="/config" className={({isActive})=>isActive?'active':''}>
           <span>⚙️</span><span>Config</span>
+        </NavLink>
+        <NavLink to="/treinamento" className={({isActive})=>isActive?'active':''}>
+          <span>📚</span><span>Treinamento</span>
         </NavLink>
       </nav>
 
@@ -58,6 +62,7 @@ export default function App() {
           <Route path="/emprestimos" element={<LoansPage />} />
           <Route path="/ativos" element={<AssetsPage />} />
           <Route path="/config" element={<SettingsPage />} />
+          <Route path="/treinamento" element={<TrainingPage />} />
         </Routes>
       </div>
     </>
