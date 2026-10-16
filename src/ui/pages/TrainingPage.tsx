@@ -38,18 +38,32 @@ const MOCK_TRAININGS: TrainingItem[] = [
   }
 ]
 
+const MONTH_NAMES = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+]
+
 export default function TrainingPage() {
   const [search, setSearch] = React.useState('')
   const [selectedCategory, setSelectedCategory] = React.useState('')
+  const [selectedYear, setSelectedYear] = React.useState<string>('')
+  const [selectedMonth, setSelectedMonth] = React.useState<string>('')
   const [expandedFolders, setExpandedFolders] = React.useState<Record<string, boolean>>({ '2024': true, '2025': true })
 
   const categories = Array.from(new Set(MOCK_TRAININGS.map(t => t.category))).sort()
+  const availableYears = Array.from(new Set(MOCK_TRAININGS.map(t => t.year))).sort((a, b) => b - a)
 
   const filtered = MOCK_TRAININGS.filter(t => {
     if (search && !t.title.toLowerCase().includes(search.toLowerCase()) && !t.description.toLowerCase().includes(search.toLowerCase())) {
       return false
     }
     if (selectedCategory && t.category !== selectedCategory) {
+      return false
+    }
+    if (selectedYear && t.year !== Number(selectedYear)) {
+      return false
+    }
+    if (selectedMonth && t.month !== Number(selectedMonth)) {
       return false
     }
     return true
@@ -64,11 +78,6 @@ export default function TrainingPage() {
   })
 
   const years = Object.keys(grouped).map(Number).sort((a, b) => b - a)
-
-  const monthNames = [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-  ]
 
   function toggleFolder(key: string) {
     setExpandedFolders(prev => ({ ...prev, [key]: !prev[key] }))
@@ -96,7 +105,7 @@ export default function TrainingPage() {
           />
           <select
             className="input"
-            style={{ width: 180 }}
+            style={{ width: 160 }}
             value={selectedCategory}
             onChange={e => setSelectedCategory(e.target.value)}
           >
@@ -105,13 +114,35 @@ export default function TrainingPage() {
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
+          <select
+            className="input"
+            style={{ width: 130 }}
+            value={selectedYear}
+            onChange={e => setSelectedYear(e.target.value)}
+          >
+            <option value="">Todos os anos</option>
+            {availableYears.map(y => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+          <select
+            className="input"
+            style={{ width: 140 }}
+            value={selectedMonth}
+            onChange={e => setSelectedMonth(e.target.value)}
+          >
+            <option value="">Todos os meses</option>
+            {MONTH_NAMES.map((name, index) => (
+              <option key={index + 1} value={index + 1}>{name}</option>
+            ))}
+          </select>
         </div>
       </div>
 
       <div style={{ height: 12 }} />
 
       {years.length === 0 ? (
-        <EmptyState title="Nenhum treinamento encontrado" description="Tente ajustar os filtros de busca ou categoria." />
+        <EmptyState title="Nenhum treinamento encontrado" description="Tente ajustar os filtros de busca, categoria, ano ou mês." />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {years.map(year => {
@@ -147,7 +178,7 @@ export default function TrainingPage() {
                           >
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                               <span>📂</span>
-                              <span>{monthNames[month - 1]}</span>
+                              <span>{MONTH_NAMES[month - 1]}</span>
                               <span className="badge" style={{ fontSize: 11, marginLeft: 4 }}>{items.length}</span>
                             </div>
                             <span className="muted" style={{ fontSize: 12 }}>{isMonthExpanded ? '▼' : '▶'}</span>
