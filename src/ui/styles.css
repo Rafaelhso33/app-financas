@@ -86,42 +86,59 @@ label{font-size:12px; color:var(--muted); display:block; margin:10px 0 6px;}
 .pill.warn{color:#fde68a; border-color:rgba(245,158,11,.5); background:rgba(245,158,11,.12);}
 .pill.danger{color:#fecaca; border-color:rgba(239,68,68,.5); background:rgba(239,68,68,.12);}
 .nav{
-  position:fixed; left:0; right:0; bottom:0;
-  background:transparent;
-  border-top:1px solid var(--border);
-  backdrop-filter: blur(10px);
-  display:flex; justify-content:flex-start; gap:6px;
-  padding:14px 10px;
+  position:fixed; left:16px; right:16px; bottom:16px; max-width:820px; margin:0 auto;
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.85), rgba(11, 18, 32, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  border-radius: 24px;
+  display:flex; justify-content:space-around; align-items: center; gap:4px;
+  padding:10px 12px;
   overflow-x:auto;
   -webkit-overflow-scrolling: touch;
+  z-index: 100;
 }
-.nav a{ flex:0 0 auto; min-width:96px; }
-.nav a{display:flex; flex-direction:column; align-items:center; gap:6px; font-size:13px; color:var(--muted); min-width:96px; padding:12px 12px; border-radius:16px; touch-action: manipulation;
+.nav::-webkit-scrollbar { display: none; }
+.nav a{ flex:0 0 auto; min-width:76px; }
+.nav a{display:flex; flex-direction:column; align-items:center; gap:4px; font-size:11px; font-weight:600; color:var(--muted); min-width:74px; padding:8px 6px; border-radius:16px; touch-action: manipulation;
   background: transparent;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.nav a.active{color:var(--text);
-  background: transparent;
+.nav a .nav-icon-float {
+  transform: translateY(-8px) scale(1);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
 }
-
-.nav a span:first-child{font-size:30px; line-height:1;}
+.nav a:hover .nav-icon-float, .nav a.active .nav-icon-float {
+  transform: translateY(-16px) scale(1.15);
+  filter: drop-shadow(0 14px 18px rgba(59, 130, 246, 0.6));
+}
+.nav a.active{color: #ffffff;
+  background: radial-gradient(circle at center, rgba(59, 130, 246, 0.25) 0%, transparent 70%);
+}
+.nav a span:first-child{font-size:26px; line-height:1;}
 
 @media(min-width: 768px) {
-  body { padding-bottom: 0; padding-left: 220px; }
+  body { padding-bottom: 0; padding-left: 240px; }
   .container { max-width: 1100px; }
   .nav {
-    top: 0;
-    bottom: 0;
-    left: 0;
+    top: 16px;
+    bottom: 16px;
+    left: 16px;
     right: auto;
     width: 220px;
-    border-top: none;
-    border-right: 1px solid var(--border);
+    max-width: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-right: 1px solid rgba(255, 255, 255, 0.14);
     flex-direction: column;
     justify-content: flex-start;
     overflow-x: visible;
-    padding: 20px 12px;
+    overflow-y: auto;
+    padding: 20px 14px;
     gap: 8px;
-    background: transparent;
+    background: linear-gradient(135deg, rgba(17, 24, 39, 0.9), rgba(11, 18, 32, 0.95));
+    border-radius: 24px;
+    box-shadow: 20px 0 40px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(59, 130, 246, 0.15);
   }
   .nav a {
     min-width: auto;
@@ -130,12 +147,19 @@ label{font-size:12px; color:var(--muted); display:block; margin:10px 0 6px;}
     align-items: center;
     padding: 12px 14px;
     font-size: 14px;
-    border-radius: 12px;
-    gap: 12px;
+    border-radius: 14px;
+    gap: 14px;
     background: transparent;
   }
+  .nav a .nav-icon-float {
+    transform: translateX(0) scale(1);
+  }
+  .nav a:hover .nav-icon-float, .nav a.active .nav-icon-float {
+    transform: translateX(6px) scale(1.15);
+    filter: drop-shadow(0 8px 14px rgba(59, 130, 246, 0.6));
+  }
   .nav a span:first-child {
-    font-size: 20px;
+    font-size: 22px;
   }
   .nav a span:last-child {
     font-size: 14px;
@@ -143,8 +167,9 @@ label{font-size:12px; color:var(--muted); display:block; margin:10px 0 6px;}
     font-weight: 600;
   }
   .nav a.active {
-    background: transparent;
+    background: rgba(59, 130, 246, 0.15);
     color: var(--brand);
+    border: 1px solid rgba(59, 130, 246, 0.3);
   }
 }
 hr{border:none; border-top:1px solid var(--border); margin:10px 0;}

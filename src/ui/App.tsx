@@ -13,26 +13,34 @@ export default function App() {
   return (
     <>
       <nav className="nav" aria-label="Navegação">
-        <NavLink to="/" end className={({isActive})=>isActive?'active':''}>
-          <span>🏠</span><span>Dashboard</span>
-        </NavLink>
+        <div className="nav-3d-glow" />
         <NavLink to="/contas" className={({isActive})=>isActive?'active':''}>
-          <span>🧾</span><span>Contas</span>
+          <div className="nav-icon-float"><span>🧾</span></div>
+          <span>Contas</span>
         </NavLink>
         <NavLink to="/cartao" className={({isActive})=>isActive?'active':''}>
-          <span>💳</span><span>Cartão</span>
+          <div className="nav-icon-float"><span>💳</span></div>
+          <span>Cartão</span>
         </NavLink>
         <NavLink to="/emprestimos" className={({isActive})=>isActive?'active':''}>
-          <span>🏦</span><span>Empréstimos</span>
+          <div className="nav-icon-float"><span>🏦</span></div>
+          <span>Empréstimo</span>
+        </NavLink>
+        <NavLink to="/" end className={({isActive})=>isActive?'active':''}>
+          <div className="nav-icon-float"><span>🏠</span></div>
+          <span>INÍCIO</span>
         </NavLink>
         <NavLink to="/ativos" className={({isActive})=>isActive?'active':''}>
-          <span>💰</span><span>Ativos</span>
+          <div className="nav-icon-float"><span>💰</span></div>
+          <span>Ativos</span>
         </NavLink>
         <NavLink to="/config" className={({isActive})=>isActive?'active':''}>
-          <span>⚙️</span><span>Config</span>
+          <div className="nav-icon-float"><span>⚙️</span></div>
+          <span>Config</span>
         </NavLink>
         <NavLink to="/treinamento" className={({isActive})=>isActive?'active':''}>
-          <span>📚</span><span>Treinamento</span>
+          <div className="nav-icon-float"><span>📚</span></div>
+          <span>Treinamento</span>
         </NavLink>
       </nav>
 
