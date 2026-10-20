@@ -33,6 +33,7 @@ export async function createPurchase(input: Omit<CreditPurchase,'id'|'criadoEm'|
     dataCompra: input.dataCompra,
     parcelasTotal: input.parcelasTotal,
     parcelaAtual,
+    parcelasPagas: Math.max(0, parcelaAtual - 1),
     competenciaInicio,
     criadoEm: nowIso(),
     atualizadoEm: nowIso()
@@ -57,6 +58,7 @@ export async function updatePurchase(id: string, patch: Partial<Omit<CreditPurch
     parcelasTotal,
     // mantém parcelaAtual consistente (não passa do total)
     parcelaAtual: Math.min(patch.parcelaAtual ?? found.parcelaAtual, parcelasTotal),
+    parcelasPagas: Math.min(parcelasTotal, Math.max(0, patch.parcelasPagas ?? found.parcelasPagas ?? 0)),
     atualizadoEm: nowIso()
   }
   await creditRepo.upsert(merged)
@@ -64,6 +66,29 @@ export async function updatePurchase(id: string, patch: Partial<Omit<CreditPurch
 
 export async function removePurchase(id: string): Promise<void> {
   await creditRepo.remove(id)
+}
+
+/** Calcula quantas parcelas já teriam vencido até hoje, com base na data real (fallback para compras antigas sem controle manual). */
+export function parcelasPagasAteHoje(p: CreditPurchase): number {
+  const hoje = new Date().toISOString().slice(0, 7) as Competencia
+  const diff = monthsDiffCompetencia(p.competenciaInicio, hoje)
+  return Math.min(p.parcelasTotal, Math.max(0, diff))
+}
+
+/** Quantidade de parcelas pagas: usa o controle manual se existir, senão estima pela data. */
+export function getParcelasPagas(p: CreditPurchase): number {
+  if (typeof p.parcelasPagas === 'number') {
+    return Math.min(p.parcelasTotal, Math.max(0, p.parcelasPagas))
+  }
+  return parcelasPagasAteHoje(p)
+}
+
+/** Marca manualmente quantas parcelas foram pagas (clampado entre 0 e o total). */
+export async function setParcelasPagas(id: string, parcelasPagas: number): Promise<void> {
+  const found = await creditRepo.get(id)
+  if (!found) return
+  const clamped = Math.min(found.parcelasTotal, Math.max(0, parcelasPagas))
+  await creditRepo.upsert({ ...found, parcelasPagas: clamped, atualizadoEm: nowIso() })
 }
 
 export function compraEstaNaCompetencia(p: CreditPurchase, competencia: Competencia): boolean {
