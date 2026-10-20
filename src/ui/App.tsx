@@ -38,10 +38,7 @@ export default function App() {
           <div className="nav-icon-float"><span>⚙️</span></div>
           <span>Config</span>
         </NavLink>
-        <NavLink to="/treinamento" className={({isActive})=>isActive?'active':''}>
-          <div className="nav-icon-float"><span>📚</span></div>
-          <span>Treinamento</span>
-        </NavLink>
+
       </nav>
 
       <div className="container">
@@ -70,7 +67,7 @@ export default function App() {
           <Route path="/emprestimos" element={<LoansPage />} />
           <Route path="/ativos" element={<AssetsPage />} />
           <Route path="/config" element={<SettingsPage />} />
-          <Route path="/treinamento" element={<TrainingPage />} />
+
         </Routes>
       </div>
     </>
