@@ -224,3 +224,69 @@ body {
 .bottom-nav {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+
+/* ===== Indicador de parcelas (cartão de crédito) ===== */
+.installments{
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid var(--border);
+}
+.installments-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+  flex-wrap:wrap;
+}
+.installments-count{
+  font-size:12px;
+  font-weight:700;
+  color:var(--text);
+  letter-spacing:.02em;
+}
+.installments-dots{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-bottom:6px;
+}
+.installment-dot{
+  width:9px;
+  height:9px;
+  border-radius:999px;
+  flex:0 0 auto;
+  transition: transform .2s ease, box-shadow .25s ease, background .25s ease;
+}
+.installment-dot.dot-paid{
+  background: linear-gradient(135deg, #93c5fd, #2563eb);
+  box-shadow: 0 0 6px rgba(59,130,246,.65), inset 0 1px 1px rgba(255,255,255,.4);
+}
+.installment-dot.dot-complete{
+  background: linear-gradient(135deg, #86efac, #16a34a);
+  box-shadow: 0 0 6px rgba(34,197,94,.65), inset 0 1px 1px rgba(255,255,255,.4);
+}
+.installment-dot.dot-pending{
+  background: rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.08);
+}
+.installments-legend{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:11px;
+  color:var(--muted);
+}
+.installments-sep{ opacity:.5; }
+.installments-actions{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+  flex-wrap:wrap;
+}
+
+@media (max-width:380px){
+  .installment-dot{ width:8px; height:8px; }
+  .installments-count{ font-size:11px; }
+}

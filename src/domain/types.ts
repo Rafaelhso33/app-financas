@@ -44,6 +44,8 @@ export type CreditPurchase = {
   competenciaInicio: Competencia
   criadoEm: string
   atualizadoEm: string
+  /** Quantidade de parcelas já marcadas como pagas (controle manual do usuário). */
+  parcelasPagas?: number
 }
 
 export type LoanPayment = { id: string; data: ISODate; valor: number }

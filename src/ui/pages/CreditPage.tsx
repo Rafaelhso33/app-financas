@@ -4,8 +4,9 @@ import { CompetenciaPicker } from '../components/CompetenciaPicker'
 import { EmptyState } from '../components/EmptyState'
 import { MoneyInput } from '../components/MoneyInput'
 import { getSavedCompetencia, saveCompetencia } from '@/services/competenciaStore'
-import { listCredit, ensureCreditForCompetencia, createPurchase, updatePurchase, removePurchase, parcelaDaCompetencia } from '@/services/creditService'
+import { listCredit, ensureCreditForCompetencia, createPurchase, updatePurchase, removePurchase, parcelaDaCompetencia, getParcelasPagas, setParcelasPagas } from '@/services/creditService'
 import { formatBRL } from '@/services/money'
+import { InstallmentIndicator } from '../components/InstallmentIndicator'
 
 type FormState = {
   id?: string
@@ -186,6 +187,19 @@ export default function CreditPage() {
                   </div>
                 </div>
               </div>
+
+              <InstallmentIndicator
+                paid={getParcelasPagas(x.raw)}
+                total={x.parcelasTotal}
+                onIncrement={async ()=>{
+                  await setParcelasPagas(x.id, getParcelasPagas(x.raw) + 1)
+                  await refresh()
+                }}
+                onDecrement={async ()=>{
+                  await setParcelasPagas(x.id, getParcelasPagas(x.raw) - 1)
+                  await refresh()
+                }}
+              />
             </div>
           ))}
         </div>
