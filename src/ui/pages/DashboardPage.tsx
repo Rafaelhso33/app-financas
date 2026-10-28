@@ -30,7 +30,7 @@ export default function DashboardPage() {
     await ensureAssetsForCompetencia(competencia)
     const [b, a, c, l] = await Promise.all([listBills(), listAssets(), listCredit(), listLoans()])
     setBills(b)
-    // Filtra poupança para abater ou somar conforme regra de ativos/poupança
+    
     const savingsSum = a
       .filter(item => item.categoria.toLowerCase().includes('poupança') || item.categoria.toLowerCase().includes('poupanca'))
       .reduce((acc, item) => acc + (item.valorPorMes?.[competencia] ?? item.valor ?? 0), 0)
@@ -47,8 +47,6 @@ export default function DashboardPage() {
     const loanPayments = l.reduce((acc, loan) => acc + paymentsTotalForCompetencia(loan, competencia), 0)
     setLoansTotal(loanPayments)
 
-    // Se houver poupança lançada, ela atua como abatimento/reserva deduzida ou somada aos ativos
-    // Vamos garantir que savingsSum seja tratado no cálculo de saldo (Ativos + Poupança - Passivos - Empréstimos)
     ;(window as any).__savingsCompetenciaTotal = savingsSum;
 
     const name = await getUserName()
@@ -58,42 +56,27 @@ export default function DashboardPage() {
   React.useEffect(()=>{
     saveCompetencia(competencia)
     refresh()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [competencia])
 
   const filtered = billsForCompetencia(bills, competencia)
-  const totals = totalsForCompetencia(filtered, competencia, loansTotal, assetsTotal.categoria === 'Poupança' ? assetsTotal : 0)
-  // Se a categoria for Poupança ou Empréstimo, abatem ou compõem os passivos/resumo
+  const totals = totalsForCompetencia(filtered, competencia, loansTotal, assetsTotal)
   const savingsCompetenciaTotal = (window as any).__savingsCompetenciaTotal || 0
   const passivos = totals.total + creditTotal + loansTotal
   const ativos = assetsTotal + savingsCompetenciaTotal
   const saldo = ativos - passivos
   const soon = vencendoEm2Dias(filtered, competencia)
 
-  // notificação: dispara quando existir algo vencendo em 2 dias e notificações ativas
   React.useEffect(()=>{
     ;(async ()=>{
       if (soon.length === 0) return
       const settings = await settingsRepo.get()
       if (!settings?.notificacoesAtivas) return
-      // notificar só uma vez por sessão (simples)
       const key = `notified_${competencia}`
       if (sessionStorage.getItem(key)) return
       sessionStorage.setItem(key, '1')
       notify('Contas vencendo em breve', `${soon.length} conta(s) vencendo em até 2 dias.`)
     })()
   }, [soon.length, competencia])
-
-  async function enableNotifications(){
-    const perm = await requestNotificationPermission()
-    if (perm !== 'granted') {
-      setToast('Sem permissão de notificação. Você ainda verá o aviso aqui no app.')
-      return
-    }
-    const s = await settingsRepo.get()
-    if (s) await settingsRepo.set({ ...s, notificacoesAtivas: true, atualizadoEm: new Date().toISOString() })
-    setToast('Notificações ativadas ✅')
-  }
 
   return (
     <>
@@ -120,26 +103,26 @@ export default function DashboardPage() {
       <div style={{height:10}} />
 
       <div className="row">
-  <div className="card col">
-    <div className="h2">Ativos</div>
-    <div className="kpi">{formatBRL(ativos)}</div>
-    <div className="muted" style={{fontSize:12}}>Entradas do mês</div>
-  </div>
-  <div className="card col">
-    <div className="h2">Passivos</div>
-    <div className="kpi">{formatBRL(passivos)}</div>
-    <div className="muted" style={{fontSize:12}}>Contas + cartão + pagamentos de empréstimo</div>
-  </div>
-  <div className="card col">
-    <div className="h2">Resumo do Mês</div>
-    <div className="kpi">{formatBRL(saldo)}</div>
-    <div className="muted" style={{fontSize:12}}>Ativos - Passivos</div>
-  </div>
-</div>
+        <div className="card col">
+          <div className="h2">Ativos</div>
+          <div className="kpi">{formatBRL(ativos)}</div>
+          <div className="muted" style={{fontSize:12}}>Entradas do mês</div>
+        </div>
+        <div className="card col">
+          <div className="h2">Passivos</div>
+          <div className="kpi">{formatBRL(passivos)}</div>
+          <div className="muted" style={{fontSize:12}}>Contas + cartão + pagamentos de empréstimo</div>
+        </div>
+        <div className="card col">
+          <div className="h2">Resumo do Mês</div>
+          <div className="kpi">{formatBRL(saldo)}</div>
+          <div className="muted" style={{fontSize:12}}>Ativos - Passivos</div>
+        </div>
+      </div>
 
-<div style={{height:12}} />
+      <div style={{height:12}} />
 
-<PieChart
+      <PieChart
         title="Gráfico do mês (Ativos x Passivos)"
         slices={[
           { label: 'Ativos', value: ativos, color: 'rgba(34,197,94,.75)' },
@@ -149,7 +132,7 @@ export default function DashboardPage() {
         centerValue={saldo}
       />
 
-<div style={{height:12}} />
+      <div style={{height:12}} />
 
       <div className="h1">Vencendo em 2 dias</div>
       <div className="muted" style={{marginTop:4}}>Contas pendentes com vencimento próximo.</div>
@@ -161,7 +144,7 @@ export default function DashboardPage() {
         <div className="list">
           {soon.map(({bill, dias})=>{
             const due = dueDateForCompetencia(competencia, bill.vencimentoDia)
-            const color = dias < 0 ? 'danger' : (dias === 0 ? 'warn' : 'warn')
+            const color = dias < 0 ? 'danger' : 'warn'
             return (
               <div key={bill.id} className="card">
                 <div className="item">
