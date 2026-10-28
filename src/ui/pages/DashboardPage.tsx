@@ -59,10 +59,11 @@ export default function DashboardPage() {
   }, [competencia])
 
   const filtered = billsForCompetencia(bills, competencia)
-  const totals = totalsForCompetencia(filtered, competencia, loansTotal, assetsTotal)
   const savingsCompetenciaTotal = (window as any).__savingsCompetenciaTotal || 0
-  const passivos = totals.total + creditTotal + loansTotal
-  const ativos = assetsTotal + savingsCompetenciaTotal
+  const totals = totalsForCompetencia(filtered, competencia)
+  // Pagamentos de empréstimo e aportes de poupança feitos no mês abatem o Resumo do Mês.
+  const passivos = totals.total + creditTotal + loansTotal + savingsCompetenciaTotal
+  const ativos = assetsTotal
   const saldo = ativos - passivos
   const soon = vencendoEm2Dias(filtered, competencia)
 
@@ -111,7 +112,7 @@ export default function DashboardPage() {
         <div className="card col">
           <div className="h2">Passivos</div>
           <div className="kpi">{formatBRL(passivos)}</div>
-          <div className="muted" style={{fontSize:12}}>Contas + cartão + pagamentos de empréstimo</div>
+          <div className="muted" style={{fontSize:12}}>Contas + cartão + pagamentos de empréstimo + aportes de poupança</div>
         </div>
         <div className="card col">
           <div className="h2">Resumo do Mês</div>
