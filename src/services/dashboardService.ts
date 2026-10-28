@@ -9,7 +9,7 @@ export function billsForCompetencia(all: Bill[], competencia: Competencia): Bill
   })
 }
 
-export function totalsForCompetencia(bills: Bill[], competencia: Competencia) {
+export function totalsForCompetencia(bills: Bill[], competencia: Competencia, loanPaymentsTotal = 0, savingsTotal = 0) {
   let pago = 0, pendente = 0
   for (const b of bills) {
     const st = b.statusPorMes?.[competencia]?.status
@@ -17,7 +17,8 @@ export function totalsForCompetencia(bills: Bill[], competencia: Competencia) {
     if (st === 'PAGO') pago += b.valor
     else pendente += b.valor
   }
-  const total = pago + pendente
+  // Empréstimos e poupanças entram nos passivos ou abatem/compõem o resumo
+  const total = pago + pendente + loanPaymentsTotal + savingsTotal
   const pctPago = total > 0 ? (pago / total) : 0
   return { pago, pendente, total, pctPago }
 }

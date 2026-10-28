@@ -6,6 +6,7 @@ import { totalsForCompetencia, vencendoEm2Dias, billsForCompetencia } from '@/se
 import { formatBRL } from '@/services/money'
 import { listAssets, ensureAssetsForCompetencia, totalAssetsForCompetencia } from '@/services/assetsService'
 import { listCredit, parcelaDaCompetencia } from '@/services/creditService'
+import { listLoans, paymentsTotalForCompetencia } from '@/services/loansService'
 import { getUserName, logout } from '@/services/authService'
 import { PieChart } from '../components/PieChart'
 import { CompetenciaPicker } from '../components/CompetenciaPicker'
@@ -20,13 +21,14 @@ export default function DashboardPage() {
   const [bills, setBills] = React.useState<Bill[]>([])
   const [assetsTotal, setAssetsTotal] = React.useState<number>(0)
   const [creditTotal, setCreditTotal] = React.useState<number>(0)
+  const [loansTotal, setLoansTotal] = React.useState<number>(0)
   const [userName, setUserName] = React.useState<string>('')
   const [toast, setToast] = React.useState<string>('')
 
   async function refresh() {
     await ensureBillsForCompetencia(competencia)
     await ensureAssetsForCompetencia(competencia)
-    const [b, a, c] = await Promise.all([listBills(), listAssets(), listCredit()])
+    const [b, a, c, l] = await Promise.all([listBills(), listAssets(), listCredit(), listLoans()])
     setBills(b)
     setAssetsTotal(totalAssetsForCompetencia(a, competencia))
     const creditMes = c
@@ -34,9 +36,10 @@ export default function DashboardPage() {
       .filter(Boolean)
       .reduce((s, x) => s + ((x as any).valorParcela || 0), 0)
     setCreditTotal(creditMes)
+    setLoansTotal(paymentsTotalForCompetencia(l, competencia))
 
-const name = await getUserName()
-setUserName(name ?? '')
+    const name = await getUserName()
+    setUserName(name ?? '')
   }
 
   React.useEffect(()=>{
@@ -47,7 +50,7 @@ setUserName(name ?? '')
 
   const filtered = billsForCompetencia(bills, competencia)
   const totals = totalsForCompetencia(filtered, competencia)
-  const passivos = totals.total + creditTotal
+  const passivos = totals.total + creditTotal + loansTotal
   const ativos = assetsTotal
   const saldo = ativos - passivos
   const soon = vencendoEm2Dias(filtered, competencia)
@@ -113,7 +116,7 @@ setUserName(name ?? '')
     <div className="muted" style={{fontSize:12}}>Contas + cartão + pagamentos de empréstimo</div>
   </div>
   <div className="card col">
-    <div className="h2">Saldo</div>
+    <div className="h2">Resumo do Mês</div>
     <div className="kpi">{formatBRL(saldo)}</div>
     <div className="muted" style={{fontSize:12}}>Ativos - Passivos</div>
   </div>
