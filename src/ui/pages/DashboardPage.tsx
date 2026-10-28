@@ -8,7 +8,9 @@ import { listAssets, ensureAssetsForCompetencia, totalAssetsForCompetencia } fro
 import { listCredit, parcelaDaCompetencia } from '@/services/creditService'
 import { listLoans, paymentsTotalForCompetencia } from '@/services/loansService'
 import { getUserName, logout } from '@/services/authService'
+import { calculateMonthlyEvolution, type MonthlyEvolutionPoint } from '@/services/dashboardService'
 import { PieChart } from '../components/PieChart'
+import { FinancialEvolutionChart } from '../components/FinancialEvolutionChart'
 import { CompetenciaPicker } from '../components/CompetenciaPicker'
 import { Toast } from '../components/Toast'
 import { dueDateForCompetencia } from '@/services/date'
@@ -24,6 +26,7 @@ export default function DashboardPage() {
   const [loansTotal, setLoansTotal] = React.useState<number>(0)
   const [userName, setUserName] = React.useState<string>('')
   const [toast, setToast] = React.useState<string>('')
+  const [evolutionPoints, setEvolutionPoints] = React.useState<MonthlyEvolutionPoint[]>([])
 
   async function refresh() {
     await ensureBillsForCompetencia(competencia)
@@ -48,6 +51,8 @@ export default function DashboardPage() {
     setLoansTotal(loanPayments)
 
     ;(window as any).__savingsCompetenciaTotal = savingsSum;
+
+    setEvolutionPoints(calculateMonthlyEvolution(b, a, c, l, competencia))
 
     const name = await getUserName()
     setUserName(name ?? '')
@@ -132,6 +137,12 @@ export default function DashboardPage() {
         centerLabel="Saldo"
         centerValue={saldo}
       />
+
+      <div style={{height:12}} />
+
+      <div className="h1">Acompanhamento mensal</div>
+      <div className="muted" style={{marginTop:4, marginBottom:10}}>Evolução de contas, cartões, empréstimos, poupança e ativos nos últimos 12 meses.</div>
+      <FinancialEvolutionChart points={evolutionPoints} />
 
       <div style={{height:12}} />
 

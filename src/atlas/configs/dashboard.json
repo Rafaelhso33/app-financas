@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "templateId": "dashboard",
+  "locale": "pt-BR",
+  "branding": {
+    "name": "Lume Analytics",
+    "shortName": "LA",
+    "tagline": "NÚMEROS QUE CONTAM HISTÓRIAS"
+  },
+  "theme": {
+    "mode": "light",
+    "accent": "#417ccd",
+    "accentText": "#ffffff",
+    "background": "#f4f6f8",
+    "surface": "#ffffff",
+    "text": "#18232d",
+    "muted": "#73808e",
+    "line": "#152a3b12",
+    "serif": false,
+    "radius": 14
+  },
+  "content": {
+    "headline": "Uma visão mais clara do seu negócio.",
+    "description": "Acompanhe o movimento e encontre o próximo passo.",
+    "eyebrow": "NÚMEROS QUE CONTAM HISTÓRIAS",
+    "cta": "Começar agora",
+    "heroImage": ""
+  },
+  "collections": {
+    "channels": [
+      {
+        "id": "1",
+        "title": "Busca orgânica",
+        "value": 4280,
+        "progress": 44
+      },
+      {
+        "id": "2",
+        "title": "Redes sociais",
+        "value": 2940,
+        "progress": 30
+      },
+      {
+        "id": "3",
+        "title": "Acesso direto",
+        "value": 1540,
+        "progress": 16
+      },
+      {
+        "id": "4",
+        "title": "Indicações",
+        "value": 970,
+        "progress": 10
+      }
+    ]
+  }
+}
