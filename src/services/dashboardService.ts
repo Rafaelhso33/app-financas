@@ -20,7 +20,7 @@ export function totalsForCompetencia(bills: Bill[], competencia: Competencia, lo
   // Empréstimos e poupanças entram nos passivos ou abatem/compõem o resumo
   const total = pago + pendente + loanPaymentsTotal + savingsTotal
   const pctPago = total > 0 ? (pago / total) : 0
-  return { pago, pendente, total, pctPago }
+  return { pago, pendente, total, pctPago, loanPaymentsTotal, savingsTotal }
 }
 
 export function vencendoEm2Dias(bills: Bill[], competencia: Competencia, today = new Date()) {

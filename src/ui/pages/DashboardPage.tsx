@@ -30,13 +30,26 @@ export default function DashboardPage() {
     await ensureAssetsForCompetencia(competencia)
     const [b, a, c, l] = await Promise.all([listBills(), listAssets(), listCredit(), listLoans()])
     setBills(b)
-    setAssetsTotal(totalAssetsForCompetencia(a, competencia))
+    // Filtra poupança para abater ou somar conforme regra de ativos/poupança
+    const savingsSum = a
+      .filter(item => item.categoria.toLowerCase().includes('poupança') || item.categoria.toLowerCase().includes('poupanca'))
+      .reduce((acc, item) => acc + (item.valorPorMes?.[competencia] ?? item.valor ?? 0), 0)
+    
+    const normalAssetsTotal = totalAssetsForCompetencia(a, competencia) - savingsSum
+    setAssetsTotal(normalAssetsTotal)
+    
     const creditMes = c
       .map(p => parcelaDaCompetencia(p, competencia))
       .filter(Boolean)
       .reduce((s, x) => s + ((x as any).valorParcela || 0), 0)
     setCreditTotal(creditMes)
-    setLoansTotal(paymentsTotalForCompetencia(l, competencia))
+    
+    const loanPayments = l.reduce((acc, loan) => acc + paymentsTotalForCompetencia(loan, competencia), 0)
+    setLoansTotal(loanPayments)
+
+    // Se houver poupança lançada, ela atua como abatimento/reserva deduzida ou somada aos ativos
+    // Vamos garantir que savingsSum seja tratado no cálculo de saldo (Ativos + Poupança - Passivos - Empréstimos)
+    ;(window as any).__savingsCompetenciaTotal = savingsSum;
 
     const name = await getUserName()
     setUserName(name ?? '')
@@ -49,9 +62,11 @@ export default function DashboardPage() {
   }, [competencia])
 
   const filtered = billsForCompetencia(bills, competencia)
-  const totals = totalsForCompetencia(filtered, competencia)
+  const totals = totalsForCompetencia(filtered, competencia, loansTotal, assetsTotal.categoria === 'Poupança' ? assetsTotal : 0)
+  // Se a categoria for Poupança ou Empréstimo, abatem ou compõem os passivos/resumo
+  const savingsCompetenciaTotal = (window as any).__savingsCompetenciaTotal || 0
   const passivos = totals.total + creditTotal + loansTotal
-  const ativos = assetsTotal
+  const ativos = assetsTotal + savingsCompetenciaTotal
   const saldo = ativos - passivos
   const soon = vencendoEm2Dias(filtered, competencia)
 
